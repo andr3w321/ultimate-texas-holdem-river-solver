@@ -1,9 +1,10 @@
 function validateAndCalculate() {
     const board = document.getElementById("board").value;
     const dead = document.getElementById("dead").value;
+    const hole = document.getElementById("holeCards").value;
     const errorMessageDiv = document.getElementById("error-message");
 
-    if (!validateCards(board, dead)) {
+    if (!validateCards(board, dead, hole)) {
         errorMessageDiv.textContent = "Error: Duplicate cards detected.";
         return;
     }
@@ -12,9 +13,9 @@ function validateAndCalculate() {
     calculateEV();
 }
 
-function validateCards(board, dead) {
+function validateCards(board, dead, hole) {
     const cardSet = new Set();
-    const allCards = (board + dead).match(/[23456789TJQKA][cdhs]/g) || [];
+    const allCards = (board + dead + hole).match(/[23456789TJQKA][cdhs]/g) || [];
 
     for (const card of allCards) {
         if (cardSet.has(card)) {
@@ -32,6 +33,7 @@ function calculateEV() {
     const river_betsize = parseInt(document.getElementById("river_betsize").value);
     const board = document.getElementById("board").value;
     const dead = document.getElementById("dead").value;
+    const hole = document.getElementById("holeCards").value;
 
     const cardToIntLookup = {
         '2c': 0, '2d': 1, '2h': 2, '2s': 3,
@@ -127,57 +129,119 @@ function calculateEV() {
     const bets = [];
     const folds = [];
 
-    for (let hole1 = 0; hole1 < 51; ++hole1) {
-        if (seenCards.has(hole1)) continue;
-        for (let hole2 = hole1 + 1; hole2 < 52; ++hole2) {
-            if (seenCards.has(hole2)) continue;
+    if (hole) {
+      const hole1 = cardToIntLookup[hole.substr(0, 2)];
+      const hole2 = cardToIntLookup[hole.substr(2, 2)];
 
-            const holecards = intToCardLookup[hole1] + intToCardLookup[hole2];
-            const deck = [];
-            for (let i = 0; i < 52; ++i) {
-                if (seenCards.has(i) || i === hole1 || i === hole2) continue;
-                deck.push(i);
-            }
-            const [evPlay, evNoPlay] = getEV(hole1, hole2, iboard, deck);
-            const key = { holecards, evPlay, evNoPlay };
+      if (hole1 === undefined || hole2 === undefined || seenCards.has(hole1) || seenCards.has(hole2) || hole1 === hole2) {
+          document.getElementById("error-message").textContent = "Invalid hole cards.";
+          return;
+      }
 
-            if (evPlay > evNoPlay) {
-                bets.push(key);
-            } else {
-                folds.push(key);
-            }
-        }
+      const deck = [];
+      for (let i = 0; i < 52; ++i) {
+          if (seenCards.has(i) || i === hole1 || i === hole2) continue;
+          deck.push(i);
+      }
+
+      const [evPlay, evNoPlay] = getEV(hole1, hole2, iboard, deck);
+      const key = { holecards: hole, evPlay, evNoPlay };
+
+      const bets = [];
+      const folds = [];
+
+      if (evPlay > evNoPlay) {
+          bets.push(key);
+      } else {
+          folds.push(key);
+      }
+      displayResults(bets, folds);
+
+    } else {
+      for (let hole1 = 0; hole1 < 51; ++hole1) {
+          if (seenCards.has(hole1)) continue;
+          for (let hole2 = hole1 + 1; hole2 < 52; ++hole2) {
+              if (seenCards.has(hole2)) continue;
+
+              const holecards = intToCardLookup[hole1] + intToCardLookup[hole2];
+              const deck = [];
+              for (let i = 0; i < 52; ++i) {
+                  if (seenCards.has(i) || i === hole1 || i === hole2) continue;
+                  deck.push(i);
+              }
+              const [evPlay, evNoPlay] = getEV(hole1, hole2, iboard, deck);
+              const key = { holecards, evPlay, evNoPlay };
+
+              if (evPlay > evNoPlay) {
+                  bets.push(key);
+              } else {
+                  folds.push(key);
+              }
+          }
+      }
+
+      bets.sort((a, b) => (a.evPlay - a.evNoPlay) - (b.evPlay - b.evNoPlay));
+      folds.sort((a, b) => (b.evPlay - b.evNoPlay) - (a.evPlay - a.evNoPlay));
+
+      const handcount = bets.length + folds.length;
+      const betsPercent = (bets.length / handcount * 100).toFixed(2);
+      const foldsPercent = (folds.length / handcount * 100).toFixed(2);
+      displayResults(bets, folds, handcount, betsPercent, foldsPercent);
     }
+}
 
-    bets.sort((a, b) => (a.evPlay - a.evNoPlay) - (b.evPlay - b.evNoPlay));
-    folds.sort((a, b) => (b.evPlay - b.evNoPlay) - (a.evPlay - a.evNoPlay));
-
-    const handcount = bets.length + folds.length;
-    const betsPercent = (bets.length / handcount * 100).toFixed(2);
-    const foldsPercent = (folds.length / handcount * 100).toFixed(2);
-
-    let resultsHTML = `
-        <p>
-            <strong>Bets:</strong> ${betsPercent}% (${bets.length}/${handcount}) 
-            <strong>Folds:</strong> ${foldsPercent}% (${folds.length}/${handcount})
-        </p>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th colspan=3>Bets</th>
-                    <th colspan=3>Folds</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Hand</td>
-                    <td>Net EV</td>
-                    <td>Bet</td>
-                    <td>Hand</td>
-                    <td>Net EV</td>
-                    <td>Bet</td>
-                </tr>
-    `;
+function displayResults(bets, folds, handcount, betsPercent, foldsPercent){
+    let resultsHTML = ``;
+    if(handcount === undefined){
+        handcount = bets.length + folds.length;
+        betsPercent = (bets.length / handcount * 100).toFixed(2);
+        foldsPercent = (folds.length / handcount * 100).toFixed(2);
+        resultsHTML = `
+            <p>
+                <strong>Bets:</strong> ${betsPercent}% (${bets.length}/${handcount}) 
+                <strong>Folds:</strong> ${foldsPercent}% (${folds.length}/${handcount})
+            </p>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th colspan=3>Bets</th>
+                        <th colspan=3>Folds</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Hand</td>
+                        <td>Net EV</td>
+                        <td>Bet</td>
+                        <td>Hand</td>
+                        <td>Net EV</td>
+                        <td>Bet</td>
+                    </tr>
+        `;
+    } else {
+        resultsHTML = `
+            <p>
+                <strong>Bets:</strong> ${betsPercent}% (${bets.length}/${handcount}) 
+                <strong>Folds:</strong> ${foldsPercent}% (${folds.length}/${handcount})
+            </p>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th colspan=3>Bets</th>
+                        <th colspan=3>Folds</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Hand</td>
+                        <td>Net EV</td>
+                        <td>Bet</td>
+                        <td>Hand</td>
+                        <td>Net EV</td>
+                        <td>Bet</td>
+                    </tr>
+        `;
+    }
 
     const maxSize = Math.max(bets.length, folds.length);
     for (let i = 0; i < maxSize; ++i) {
@@ -214,9 +278,9 @@ function calculateEV() {
     }
 
     resultsHTML += `
-            </tbody>
-        </table>
-    `;
+                </tbody>
+            </table>
+        `;
 
     document.getElementById("results").innerHTML = resultsHTML;
 }
