@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ultimate Texas Hold'em River EV Calculator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Ultimate Texas Hold'em River EV Calculator</h1>
+        <form id="pokerForm">
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="ante_size">Ante Size:</label>
+                    <input type="number" class="form-control" id="ante_size" name="ante_size" value="25">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="blind_size">Blind Size:</label>
+                    <input type="number" class="form-control" id="blind_size" name="blind_size" value="25">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="river_betsize">River Bet Size:</label>
+                    <input type="number" class="form-control" id="river_betsize" name="river_betsize" value="1">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="board">Board Cards (e.g., 6c2d8hJs3c):</label>
+                    <input type="text" class="form-control" id="board" name="board" value="6c2d8hJs3c">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="dead">Dead Cards (e.g., 5s5d):</label>
+                    <input type="text" class="form-control" id="dead" name="dead" value="5s5d">
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="validateAndCalculate()">Calculate</button>
+        </form>
+
+        <div id="error-message" class="mt-2 text-danger"></div>
+        <div id="results" class="mt-4"></div>
+    </div>
+
+    <script src="phebundle.js"></script>
+    <script src="calculate.js"></script>
+</body>
+</html>
