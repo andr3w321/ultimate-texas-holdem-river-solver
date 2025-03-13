@@ -17,7 +17,8 @@ function generateRandomCards(targetId) {
     const numCards = targetId === "dead" ? parseInt(document.getElementById("numDead").value) : 5; // numDead for dead, 5 for board
     const boardCards = document.getElementById("board").value.match(/[23456789TJQKA][cdhs]/g) || [];
     const deadCards = document.getElementById("dead").value.match(/[23456789TJQKA][cdhs]/g) || [];
-    const allUsedCards = new Set([...boardCards, ...deadCards]);
+    const holeCards = document.getElementById("holeCards").value.match(/[23456789TJQKA][cdhs]/g) || [];
+    const allUsedCards = new Set([...boardCards, ...deadCards, ...holeCards]);
 
     const ranks = "23456789TJQKA";
     const suits = "cdhs";
