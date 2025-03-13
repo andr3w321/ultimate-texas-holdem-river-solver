@@ -35,6 +35,11 @@ function calculateEV() {
     const dead = document.getElementById("dead").value;
     const hole = document.getElementById("holeCards").value;
 
+    if (board.length !== 10) {
+            document.getElementById("error-message").textContent = "Error: Board must contain exactly 5 cards.";
+            return; // Exit the function
+        }
+
     const cardToIntLookup = {
         '2c': 0, '2d': 1, '2h': 2, '2s': 3,
         '3c': 4, '3d': 5, '3h': 6, '3s': 7,
