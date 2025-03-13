@@ -164,8 +164,8 @@ function calculateEV() {
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th colspan=4>Bets</th>
-                    <th colspan=4>Folds</th>
+                    <th colspan=3>Bets</th>
+                    <th colspan=3>Folds</th>
                 </tr>
             </thead>
             <tbody>
@@ -173,11 +173,9 @@ function calculateEV() {
                     <td>Hand</td>
                     <td>Net EV</td>
                     <td>Bet</td>
-                    <td>Fold</td>
                     <td>Hand</td>
                     <td>Net EV</td>
                     <td>Bet</td>
-                    <td>Fold</td>
                 </tr>
     `;
 
@@ -186,25 +184,21 @@ function calculateEV() {
         let betHolecards = '';
         let betNetEv = '';
         let betEvPlay = '';
-        let betEvNoPlay = '';
 
         let foldHolecards = '';
         let foldNetEv = '';
         let foldEvPlay = '';
-        let foldEvNoPlay = '';
 
         if (i < bets.length) {
             betHolecards = bets[i].holecards;
             betNetEv = (bets[i].evPlay - bets[i].evNoPlay).toFixed(4);
             betEvPlay = (bets[i].evPlay).toFixed(4);
-            betEvNoPlay = (bets[i].evNoPlay).toFixed(4);
         }
 
         if (i < folds.length) {
             foldHolecards = folds[i].holecards;
             foldNetEv = (folds[i].evPlay - folds[i].evNoPlay).toFixed(4);
             foldEvPlay = (folds[i].evPlay).toFixed(4);
-            foldEvNoPlay = (folds[i].evNoPlay).toFixed(4);
         }
 
         resultsHTML += `
@@ -212,11 +206,9 @@ function calculateEV() {
                 <td>${betHolecards}</td>
                 <td>${betNetEv}</td>
                 <td>${betEvPlay}</td>
-                <td>${betEvNoPlay}</td>
                 <td>${foldHolecards}</td>
                 <td>${foldNetEv}</td>
                 <td>${foldEvPlay}</td>
-                <td>${foldEvNoPlay}</td>
             </tr>
         `;
     }
