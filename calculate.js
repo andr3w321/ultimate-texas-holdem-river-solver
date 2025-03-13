@@ -1,16 +1,43 @@
 function validateAndCalculate() {
-    const board = document.getElementById("board").value;
-    const dead = document.getElementById("dead").value;
-    const hole = document.getElementById("holeCards").value;
+    let board = document.getElementById("board").value;
+    let dead = document.getElementById("dead").value;
+    let hole = document.getElementById("holeCards").value;
     const errorMessageDiv = document.getElementById("error-message");
+
+    // Format the card inputs
+    board = formatCards(board);
+    dead = formatCards(dead);
+    hole = formatCards(hole);
+
+    // Update the input fields with the formatted values
+    document.getElementById("board").value = board;
+    document.getElementById("dead").value = dead;
+    document.getElementById("holeCards").value = hole;
 
     if (!validateCards(board, dead, hole)) {
         errorMessageDiv.textContent = "Error: Duplicate cards detected.";
         return;
     }
 
-    errorMessageDiv.textContent = ""; // Clear previous error message
+    errorMessageDiv.textContent = "";
     calculateEV();
+}
+
+function formatCards(cards) {
+    if (!cards) return ""; // Handle empty input
+
+    let formattedCards = "";
+    for (let i = 0; i < cards.length; i++) {
+        let char = cards[i];
+        if (/[tjqka]/.test(char)) {
+            formattedCards += char.toUpperCase();
+        } else if (/[CDHS]/.test(char)){
+            formattedCards += char.toLowerCase();
+        } else {
+            formattedCards += char;
+        }
+    }
+    return formattedCards;
 }
 
 function validateCards(board, dead, hole) {
