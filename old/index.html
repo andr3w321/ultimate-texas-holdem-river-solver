@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ultimate Texas Hold'em River EV Calculator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Ultimate Texas Hold'em River EV Calculator</h1>
+        <form id="pokerForm">
+            <div class="form-row">
+                <div class="form-group col-md-2">
+                    <label for="ante_size">Ante Size:</label>
+                    <input type="number" class="form-control" id="ante_size" name="ante_size" value="25">
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="blind_size">Blind Size:</label>
+                    <input type="number" class="form-control" id="blind_size" name="blind_size" value="25">
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="river_betsize">River Bet Size:</label>
+                    <input type="number" class="form-control" id="river_betsize" name="river_betsize" value="1">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-md-6">
+                    <label>Fold EV: <span id="foldEvValue">-50.0000</span></label>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="board">Board Cards:</label>
+                    <input type="text" class="form-control" id="board" name="board" value="" placeholder="">
+                </div>
+                <div class="form-group col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-primary" id="randomBoardBtn">Random Board</button>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="dead">Dead Cards:</label>
+                    <input type="text" class="form-control" id="dead" name="dead" value="" placeholder="">
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="numDead"># Random Dead:</label>
+                    <input type="text" class="form-control" id="numDead" name="numDead" value="10">
+                </div>
+                <div class="form-group col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-primary" id="randomDeadBtn">Random Dead</button>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="hole">Hole Cards (optional):</label>
+                    <input type="text" class="form-control" id="holeCards" name="holeCards" value="" placeholder="">
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary" id="calculateBtn">Calculate EVs</button>
+        </form>
+
+        <div id="error-message" class="mt-2 text-danger"></div>
+        <div id="results" class="mt-4"></div>
+    </div>
+
+    <script src="phebundle.js"></script>
+    <script src="calculate.js"></script>
+    <script src="events.js"></script>
+</body>
+</html>
